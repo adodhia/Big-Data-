@@ -1,0 +1,5 @@
+feedback:
+  script:
+  - run_kate . cspark/ads06-big-data:production
+  tags:
+  - kate2.0
