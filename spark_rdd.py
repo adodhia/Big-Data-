@@ -7,7 +7,7 @@ def count_elements_in_dataset(dataset):
     :return: number of elements in the RDD
     """
 
-    raise NotImplementedError
+    return dataset.count()
 
 
 def get_first_element(dataset):
@@ -19,7 +19,7 @@ def get_first_element(dataset):
     :return: the first element of the RDD
     """
 
-    raise NotImplementedError
+    return dataset.first()
 
 
 def get_all_attributes(dataset):
@@ -31,8 +31,8 @@ def get_all_attributes(dataset):
     :type dataset: a Spark RDD
     :return: all unique attributes collected in a list
     """
-
-    raise NotImplementedError
+    all_attributes = dataset.flatMap(lambda x: x.keys()).distinct().collect()
+    return all_attributes
 
 
 def get_elements_w_same_attributes(dataset):
