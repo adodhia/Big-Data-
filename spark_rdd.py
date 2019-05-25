@@ -135,7 +135,16 @@ def get_score_per_hour(dataset):
     """
 
   
-    raise NotImplementedError
+    from datetime import datetime as dt
+
+    def get_hour(rec):
+        time_ = dt.utcfromtimestamp(rec['created_at_i'])
+        return time_.hour
+
+
+
+    return scores_per_hour_rdd
+
 
 
 def get_proportion_of_scores(dataset):
@@ -178,6 +187,17 @@ def get_title_length_distribution(dataset):
     :type dataset: a Spark RDD
     :return: an RDD with the number of submissions per title length
     """
+    
+    import re
+
+    def get_words(line):
+        return re.compile(r'\w+').findall(line)
+
+    submissions_per_length_rdd = dataset.map(lambda x: (len(
+        get_words(x.get('title', ''))), 1)).reduceByKey(lambda x, y: x + y)
+
+    return submissions_per_length_rdd
+
 
     raise NotImplementedError
 
