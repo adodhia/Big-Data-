@@ -156,7 +156,18 @@ def get_proportion_of_scores(dataset):
     :return: an RDD with the proportion of scores over 200 per hour
     """
 
-    raise NotImplementedError
+    from datetime import datetime as dt
+
+    def get_hour(rec):
+        time_ = dt.utcfromtimestamp(rec['created_at_i'])
+        return time_.hour
+
+    prop_per_hour_rdd = dataset.map(lambda x: (get_hour(x), (1 if x['points'] > 200 else 0, 1))) \
+        .reduceByKey(lambda x, y: (x[0] + y[0], x[1] + y[1])) \
+        .map(lambda x: (x[0], x[1][0] / x[1][1]))
+
+    return prop_per_hour_rdd
+
 
 
 def get_proportion_of_success(dataset):
