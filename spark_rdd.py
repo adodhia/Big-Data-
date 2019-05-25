@@ -133,7 +133,7 @@ def get_score_per_hour(dataset):
     :return: an RDD with average score per hour
     """
 
-  from datetime import datetime as dt
+    from datetime import datetime as dt
 
     def get_hour(rec):
         time_ = dt.utcfromtimestamp(rec['created_at_i'])
