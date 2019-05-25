@@ -47,7 +47,19 @@ def get_elements_w_same_attributes(dataset):
     first element
     """
 
-    raise NotImplementedError
+   # Returns true if two elements have the same schema
+    def compare_elems(first, second):
+        if len(first) != len(second):
+            return False
+        for key in first.keys():
+            if key not in second:
+                return False
+        return True
+
+    first = dataset.first()
+
+    return dataset.filter(lambda x: compare_elems(first, x))
+
 
 
 def get_min_max_timestamps(dataset):
@@ -59,7 +71,18 @@ def get_min_max_timestamps(dataset):
     :rtype: tuple
     """
 
-    raise NotImplementedError
+    from datetime import datetime as dt
+
+    def extract_time(timestamp):
+        return dt.utcfromtimestamp(timestamp)
+
+    min_time = dataset.map(lambda x: x['created_at_i']).reduce(lambda x, y: x
+                                                               if x < y else y)
+    max_time = dataset.map(lambda x: x['created_at_i']).reduce(lambda x, y: x
+                                                               if x > y else y)
+
+    return extract_time(min_time), extract_time(max_time)
+
 
 
 def get_number_of_posts_per_bucket(dataset, min_time, max_time):
