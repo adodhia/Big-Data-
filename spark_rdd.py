@@ -96,7 +96,15 @@ def get_number_of_posts_per_bucket(dataset, min_time, max_time):
     :return: an RDD with number of elements per bucket
     """
 
-    raise NotImplementedError
+    def get_bucket(rec, min_timestamp, max_timestamp):
+        interval = (max_timestamp - min_timestamp + 1) / 200.0
+        return int((rec['created_at_i'] - min_timestamp) / interval)
+
+    min_time = min_time.timestamp()
+    max_time = max_time.timestamp()
+    return dataset.map(lambda x: (get_bucket(x, min_time, max_time), 1)
+                      ).reduceByKey(lambda x, y: x + y)
+
 
 
 def get_number_of_posts_per_hour(dataset):
@@ -108,7 +116,16 @@ def get_number_of_posts_per_hour(dataset):
     :return: an RDD with number of elements per hour
     """
 
-    raise NotImplementedError
+
+    from datetime import datetime as dt
+
+    def get_hour(rec):
+        time_ = dt.utcfromtimestamp(rec['created_at_i'])
+        return time_.hour
+
+    return dataset.map(lambda x: (get_hour(x), 1)).reduceByKey(lambda x, y: x +
+                                                               y)
+
 
 
 def get_score_per_hour(dataset):
@@ -120,7 +137,18 @@ def get_score_per_hour(dataset):
     :return: an RDD with average score per hour
     """
 
-    raise NotImplementedError
+  from datetime import datetime as dt
+
+    def get_hour(rec):
+        time_ = dt.utcfromtimestamp(rec['created_at_i'])
+        return time_.hour
+
+    scores_per_hour_rdd = dataset.map(lambda x: (get_hour(x), (x['points'], 1))) \
+        .reduceByKey(lambda x, y: (x[0] + y[0], x[1] + y[1])) \
+        .map(lambda x: (x[0], x[1][0] / x[1][1]))
+
+    return scores_per_hour_rdd
+
 
 
 def get_proportion_of_scores(dataset):
