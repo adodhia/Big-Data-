@@ -114,13 +114,7 @@ def get_number_of_posts_per_hour(dataset):
     """
 
 
-    from datetime import datetime as dt
-
-    def get_hour(rec):
-        time_ = dt.utcfromtimestamp(rec['created_at_i'])
-        return time_.hour
-
-    return dataset.map(lambda x: (get_hour(x), 1)).reduceByKey(lambda x, y: x +y)
+    raise NotImplementedError
 
 
 
@@ -133,17 +127,8 @@ def get_score_per_hour(dataset):
     :return: an RDD with average score per hour
     """
 
-    from datetime import datetime as dt
-
-    def get_hour(rec):
-        time_ = dt.utcfromtimestamp(rec['created_at_i'])
-        return time_.hour
-
-    scores_per_hour_rdd = dataset.map(lambda x: (get_hour(x), (x['points'], 1))) \.reduceByKey(lambda x, y: (x[0] + y[0], x[1] + y[1])) \
-        .map(lambda x: (x[0], x[1][0] / x[1][1]))
-
-    return scores_per_hour_rdd
-
+  
+    raise NotImplementedError
 
 
 def get_proportion_of_scores(dataset):
