@@ -76,10 +76,8 @@ def get_min_max_timestamps(dataset):
     def extract_time(timestamp):
         return dt.utcfromtimestamp(timestamp)
 
-    min_time = dataset.map(lambda x: x['created_at_i']).reduce(lambda x, y: x
-                                                               if x < y else y)
-    max_time = dataset.map(lambda x: x['created_at_i']).reduce(lambda x, y: x
-                                                               if x > y else y)
+    min_time = dataset.map(lambda x: x['created_at_i']).reduce(lambda x, y: x  if x < y else y)
+    max_time = dataset.map(lambda x: x['created_at_i']).reduce(lambda x, y: x  if x > y else y)
 
     return extract_time(min_time), extract_time(max_time)
 
@@ -102,8 +100,7 @@ def get_number_of_posts_per_bucket(dataset, min_time, max_time):
 
     min_time = min_time.timestamp()
     max_time = max_time.timestamp()
-    return dataset.map(lambda x: (get_bucket(x, min_time, max_time), 1)
-                      ).reduceByKey(lambda x, y: x + y)
+    return dataset.map(lambda x: (get_bucket(x, min_time, max_time), 1)).reduceByKey(lambda x, y: x + y)
 
 
 
@@ -123,8 +120,7 @@ def get_number_of_posts_per_hour(dataset):
         time_ = dt.utcfromtimestamp(rec['created_at_i'])
         return time_.hour
 
-    return dataset.map(lambda x: (get_hour(x), 1)).reduceByKey(lambda x, y: x +
-                                                               y)
+    return dataset.map(lambda x: (get_hour(x), 1)).reduceByKey(lambda x, y: x +y)
 
 
 
@@ -143,8 +139,7 @@ def get_score_per_hour(dataset):
         time_ = dt.utcfromtimestamp(rec['created_at_i'])
         return time_.hour
 
-    scores_per_hour_rdd = dataset.map(lambda x: (get_hour(x), (x['points'], 1))) \
-        .reduceByKey(lambda x, y: (x[0] + y[0], x[1] + y[1])) \
+    scores_per_hour_rdd = dataset.map(lambda x: (get_hour(x), (x['points'], 1))) \.reduceByKey(lambda x, y: (x[0] + y[0], x[1] + y[1])) \
         .map(lambda x: (x[0], x[1][0] / x[1][1]))
 
     return scores_per_hour_rdd
